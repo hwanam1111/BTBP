@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="got_man">
+
+	<!-- @나를 친구로 등록한 사람 -->
+	<select id="nfriendList" parameterType="String" resultType="FriendVO">
+	select bb.*, aa.noReadCount noReadCount from
+			(select
+			    send_id sendId,
+			    count(*) noReadCount
+			from cpp_message
+			where read = 'N'
+			and receive_id = #{memberId}
+			group by send_id) aa,
+		(select cf.MEMBER_ID friendId,
+				cf.FRIEND_ID memberId,
+				to_char(cf.CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate,
+				MEMBER_NAME memberName,
+				MEMBER_GENDER memberGender,
+				MEMBER_PHONE memberPhone,
+				MEMBER_EMAIL memberEmail,
+				MEMBER_COMPANY memberCompany,
+				MEMBER_DEPT memberDept,
+				MEMBER_RANK memberRank,
+				LAST_LOGIN_DATE lastLoginDate,
+				LEAVE_DATE leaveDate,
+				MEMBER_STATUS memberStatus,
+				MEMBER_IMAGE_NAME memberImageName,
+				MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+				MEMBER_IMAGE_PATH memberImagePath,
+				MEMBER_IMAGE_SIZE memberImageSize,
+				cl.MEMBER_ID loginStatus 
+		from cpp_friend cf, cpp_member cm, cpp_login cl
+		where cl.member_id(+) = cf.member_id
+		and cf.member_id = cm.member_id
+		and cf.friend_id = #{memberId}
+		and cf.member_id not in(select friend_id
+		                        from cpp_friend
+		                        where member_id=#{memberId})) bb
+		where aa.sendId(+) = bb.friendId
+		order by createDate desc
+	</select>
+
+	<!-- @아이디 찾기 -->
+	<select id="memberIdSearch" parameterType="MemberVO" resultType="MemberVO">
+		select member_id memberId
+		from cpp_member
+		where member_name = #{memberName}
+		and member_email = #{memberEmail}
+	</select>
+	
+	<!-- @비밀번호 찾기 -->
+	<select id="memberPwSearch" parameterType="MemberVO" resultType="MemberVO">
+		select ENCRYPTION_AES.DEC_AES(member_pw) memberPw,
+		member_email memberEmail
+		from cpp_member
+		where member_id = #{memberId}
+		and member_email = #{memberEmail}
+	</select>
+
+	<!-- @프로젝트 생성 시 PM 멤버 추가 -->
+	<insert id="projectAddMember" parameterType="ProjectVO">
+		insert into CPP_PROJECT_MEMBER values(#{memberId}, #{projectNo}, 'PM', sysdate)
+	</insert>
+
+	<!-- @프로젝트 생성 구문 -->
+	<insert id="projectSave" parameterType="ProjectVO">
+		<!-- 자동 생성키(시퀀스) 조회 -->
+		<selectKey keyColumn="PROJECT_NO" keyProperty="projectNo" resultType="int" order="BEFORE">
+			select seq_cpp_project_no.nextval
+			from dual
+		</selectKey>
+		insert into cpp_project(
+			PROJECT_NO,
+			PROJECT_NAME,
+			PROJECT_STATUS,
+			PROJECT_DETAIL,
+			ORDER_COMPANY,
+			OBTAIN_COMPANY,
+			PROJECT_BUDGET,
+			START_DATE,
+			END_DATE,
+			member_id
+		)
+		values(
+			#{projectNo},
+			#{projectName},
+			'doing',
+			#{projectDetail},
+			#{orderCompany},
+			#{obtainCompany},
+			#{projectBudget},
+			to_date(#{startDate}, 'mm/dd/yyyy'),
+			to_date(#{endDate}, 'mm/dd/yyyy'),
+			#{memberId}
+		)
+	</insert>
+
+	<!-- @게시글 작성 -->
+	<insert id="boardWrite" parameterType="BoardVO">
+		insert into cpp_board(
+			BOARD_NO,
+			MEMBER_ID,
+			PROJECT_NO,
+			BOARD_TYPE,
+			BOARD_TITLE,
+			BOARD_CONTENT,
+			BOARD_CNT,
+			CREATE_DATE
+		)
+		values(
+			SEQ_CPP_BOARD_NO.nextval,
+			#{memberId},
+			'1',
+			'all',
+			#{boardTitle},
+			#{boardContent},
+			'0',
+			sysdate
+		)
+	</insert>
+
+	<!-- @게시글 수정 -->
+	<delete id="boardUpdate" parameterType="BoardVO">
+		update cpp_board 
+		set 
+			board_title = #{boardTitle},  
+			board_content = #{boardContent},
+		<if test="fileName != null">
+			file_name = #{fileName},
+			file_size = #{fileSize},
+		</if>
+			create_date = sysdate
+		where board_no = #{boardNo} and member_id = #{memberId}
+	</delete>
+
+	<!-- @게시글 삭제 -->
+	<delete id="boardDelete" parameterType="BoardVO">
+		delete from cpp_board where board_no = #{boardNo} 
+		<if test="memberId != null">
+		and member_id = #{memberId}
+		</if>
+	</delete>
+
+	<!-- @댓글 삭제(파라미터 Bvo) -->
+	<delete id="boardReplyDel" parameterType="BoardVO">
+		delete from cpp_reply 
+		where board_no = #{boardNo}
+	</delete>
+	
+	<!-- @댓글 삭제(파라미터 Rvo)-->
+	<delete id="boardReplyDelete" parameterType="ReplyVO">
+		delete from cpp_reply 
+		where board_no = #{boardNo}
+			and reply_no = #{replyNo}
+			and member_id = #{memberId}
+	</delete>
+
+	<!-- @댓글 입력 -->
+	<insert id="replySave" parameterType="ReplyVO">
+	<![CDATA[
+		insert into cpp_reply(reply_no, board_no, member_id, reply_content, create_date)
+		values(seq_cpp_reply_no.nextval, #{boardNo}, #{memberId}, #{replyContent}, sysdate)
+	]]>
+	</insert>
+
+	<!-- @게시판 조회수 증가 -->
+	<update id="boardCountPlus" parameterType="BoardVO">
+		update cpp_board set BOARD_CNT = BOARD_CNT+1 where BOARD_NO = #{boardNo}
+	</update>
+
+	<!-- @게시판 댓글 조회 -->
+	<select id="replyList" parameterType="BoardVO" resultType="ReplyVO">
+		select
+			REPLY_NO replyNo,
+			BOARD_NO boardNo,
+			MEMBER_ID memberId, 
+			REPLY_CONTENT replyContent,
+			CREATE_DATE createDate
+		from cpp_reply
+		where BOARD_NO = #{boardNo}
+		order by CREATE_DATE
+	</select>
+
+	<!-- @게시판 내용 읽기 -->
+	<select id="boardView" parameterType="BoardVO" resultType="BoardVO">
+		select 
+			BOARD_NO boardNo,
+			MEMBER_ID memberId, 
+			PROJECT_NO projectNo,
+			BOARD_TYPE boardType,
+			BOARD_TITLE boardTitle,
+			BOARD_CONTENT boardContent,
+			BOARD_CNT boardCnt,
+			FILE_NAME fileName,
+			FILE_PATH filePath,
+			CREATE_DATE createDate,
+			FILE_SAVE_NAME fileSaveName,
+			FILE_SIZE fileSize
+		from cpp_board
+		where BOARD_NO = #{boardNo}
+	</select>
+
+	<!-- @읽지 않는 전체 메세지 수 -->
+	<select id="noReadMsg" parameterType="String" resultType="int">
+	select
+	    count(*) cnt
+	from cpp_message
+	where read = 'N'
+	and receive_id = #{memberId}
+	</select>
+
+	<!-- @상대방이 보낸 메세지 읽음 처리 -->
+	<update id="msgRead" parameterType="MessageVO" >
+		update cpp_message set read = 'Y' where send_id = #{receiveId} and receive_id = #{sendId} 
+	</update>
+
+	<!-- @1:1대화창 메세지 불러오기 -->
+	<select id="msgList" parameterType="MessageVO" resultType="MessageVO">
+	<![CDATA[
+		select
+			send_id sendId,
+			receive_id receiveId,
+			message,
+			mdate,
+			read
+		from
+			(select
+				send_id,
+				receive_id,
+				message,
+				to_char(mdate, 'yy/mm/dd hh24:mi:ss') mdate,
+				read
+			from cpp_message
+			where send_id = #{sendId}
+				and receive_id = #{receiveId}
+			union all
+			select
+				send_id,
+				receive_id,
+				message,
+				to_char(mdate, 'yy/mm/dd hh24:mi:ss') mdate,
+				read
+			from cpp_message
+			where receive_id = #{sendId}
+			and send_id = #{receiveId})
+		order by mdate
+	]]>
+	</select>
+	
+	<!-- @회원정보 수정 시 -->
+	<update id="memberInfoUpdate" parameterType="MemberVO">
+		update cpp_member
+		set 
+			member_email = #{memberEmail},
+			member_company = #{memberCompany},
+			member_dept = #{memberDept},
+			member_rank = #{memberRank},
+			member_name = #{memberName},
+			member_phone = #{memberPhone},
+			search_status = #{searchStatus}
+			<if test="memberImageName != null">
+			, 
+			MEMBER_IMAGE_NAME = #{memberImageName},
+			member_Image_Save_Name = seq_cpp_member_image.nextval||'_'||#{memberImageName},
+			MEMBER_IMAGE_SIZE = #{memberImageSize}
+			</if>
+		where member_id = #{memberId}
+	</update>
+
+	<!-- @비밀번호 변경 시 -->
+	<update id="memberPwChg" parameterType="MemberVO">
+		update cpp_member
+		set member_pw = ENCRYPTION_AES.ENC_AES(#{memberPw})
+		where member_id = #{memberId}
+	</update>
+
+	<!-- @회원 탈퇴 시 -->
+	<update id="memberOut" parameterType="MemberVO">
+		update cpp_member 
+		set member_Status = 'N' 
+		where member_id = #{memberId} and member_pw = ENCRYPTION_AES.ENC_AES(#{memberPw})
+	</update>
+
+	<!-- @메세지 전송 -->
+	<insert id="msgSend" parameterType="MessageVO" >
+		insert into cpp_message(SEND_ID, RECEIVE_ID, MESSAGE, MDATE, READ)
+		values(#{sendId}, #{receiveId}, #{message}, sysdate, 'N')
+	</insert>
+
+	<!-- @친구 삭제 -->
+	<delete id="friendRemove" parameterType="FriendVO">
+	delete from cpp_friend where member_id = #{memberId} and friend_id = #{friendId}
+	</delete>
+
+	<!-- @친구 추가 -->
+	<select id="friendAdd" parameterType="FriendVO" >
+		insert into cpp_friend values(#{memberId}, #{friendId}, sysdate)
+	</select>
+
+	<!-- @친구 추가 시 이미 등록된 친구인지 확인 -->
+	<select id="friendAddCheck" parameterType="FriendVO" resultType="int">
+		select count(*) cnt from cpp_friend where member_id = #{memberId} and friend_id = #{friendId}
+	</select>
+
+	<!-- @ 이미 로그인한 회원인지 체크 -->
+	<select id ="memberLoginCheck" parameterType="String" resultType="int">
+		select count(*) cnt from cpp_login where member_id = #{memberId}
+	</select>	
+
+	<!-- @ 로그인 아웃 시 로그인정보 삭제 -->
+	<delete id="memberLogout" parameterType="String">
+		delete from cpp_login where member_id = #{memberId}
+	</delete>
+
+	<!-- @ 로그인 성공 시 로그인정보 저장 -->
+	<insert id="memberLoginOk" parameterType="String">
+		insert into cpp_login values(#{memberId}, sysdate)
+	</insert>
+
+	<!-- @메세지함 -->
+	<select id="messageBox" parameterType="String" resultType="FriendVO">
+	select *
+		from 
+		(select
+		        send_id sendId,
+		        count(*) noReadCount
+		from cpp_message a
+		where read = 'N'
+		and receive_id = #{memberId}
+		group by send_id) aa,
+		(select 
+			    a.MEMBER_ID memberId,
+				to_char(a.CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate,
+				MEMBER_NAME memberName,
+				MEMBER_GENDER memberGender,
+				MEMBER_PHONE memberPhone,
+				MEMBER_EMAIL memberEmail,
+				MEMBER_COMPANY memberCompany,
+				MEMBER_DEPT memberDept,
+				MEMBER_RANK memberRank,
+				LAST_LOGIN_DATE lastLoginDate,
+				LEAVE_DATE leaveDate,
+				MEMBER_STATUS memberStatus,
+				MEMBER_IMAGE_NAME memberImageName,
+				MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+				MEMBER_IMAGE_PATH memberImagePath,
+				MEMBER_IMAGE_SIZE memberImageSize,
+				b.MEMBER_ID loginStatus
+			from cpp_member a, cpp_login b
+			where a.member_id = b.member_id(+)) bb
+		where aa.sendId = bb.memberId(+)
+	</select>
+
+	<!-- @ 로그인 메인화면 @ 최근 등록한 내친구 목록 조회 쿼리 -->
+	<select id="myFriendAll" parameterType="String" resultType="FriendVO">
+	select bb.*, aa.noReadCount noReadCount from
+	(select
+	    send_id sendId,
+	    count(*) noReadCount
+	from cpp_message
+	where read = 'N'
+	and receive_id = #{memberId}
+	group by send_id) aa,
+	(select 
+	    a.MEMBER_ID memberId,
+		a.FRIEND_ID friendId,
+		to_char(a.CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate,
+		MEMBER_NAME memberName,
+		MEMBER_GENDER memberGender,
+		MEMBER_PHONE memberPhone,
+		MEMBER_EMAIL memberEmail,
+		MEMBER_COMPANY memberCompany,
+		MEMBER_DEPT memberDept,
+		MEMBER_RANK memberRank,
+		LAST_LOGIN_DATE lastLoginDate,
+		LEAVE_DATE leaveDate,
+		MEMBER_STATUS memberStatus,
+		MEMBER_IMAGE_NAME memberImageName,
+		MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+		MEMBER_IMAGE_PATH memberImagePath,
+		MEMBER_IMAGE_SIZE memberImageSize,
+		c.MEMBER_ID loginStatus
+	from cpp_friend a, cpp_member b, cpp_login c
+	where a.friend_id = b.member_id
+	and a.friend_id = c.member_id(+)
+	and a.member_id = #{memberId}
+	and b.member_status = 'Y'
+	order by a.create_Date) bb
+	where aa.sendId(+) = bb.friendId
+	order by createDate desc
+	</select>
+	
+	<!-- @ 내 친구 화면 @ 검색한 이름에 해당하는 친구 조회 -->
+	<select id="myFriendName" parameterType="MemberVO" resultType="FriendVO">
+	<![CDATA[
+	select 
+	    a.MEMBER_ID memberId,
+		a.FRIEND_ID friendId,
+		to_char(a.CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate,
+		MEMBER_NAME memberName,
+		MEMBER_GENDER memberGender,
+		MEMBER_PHONE memberPhone,
+		MEMBER_EMAIL memberEmail,
+		MEMBER_COMPANY memberCompany,
+		MEMBER_DEPT memberDept,
+		MEMBER_RANK memberRank,
+		LAST_LOGIN_DATE lastLoginDate,
+		LEAVE_DATE leaveDate,
+		MEMBER_STATUS memberStatus,
+		MEMBER_IMAGE_NAME memberImageName,
+		MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+		MEMBER_IMAGE_PATH memberImagePath,
+		MEMBER_IMAGE_SIZE memberImageSize,
+		c.MEMBER_ID loginStatus
+	from cpp_friend a, cpp_member b, cpp_login c
+	where a.friend_id = b.member_id
+	and a.friend_id = c.member_id(+)
+	and a.member_id = #{memberId}
+	and b.member_name like '%'||#{memberName}||'%'
+	and b.member_status = 'Y'
+	order by a.create_Date
+	]]>
+	</select>
+
+	<select id="allBoardPage" resultType="int">
+		select CEIL(count(*)/10) pCnt
+		from cpp_board
+		where BOARD_TYPE = 'all'
+	</select>
+
+	<select id="allBoardSelect" resultType="BoardVO">
+	select 
+		BOARD_NO boardNo, 
+		MEMBER_ID memberId, 
+		PROJECT_NO projectNo,
+		BOARD_TYPE boardType, 
+		BOARD_TITLE boardTitle, 
+		BOARD_CONTENT boardContent, 
+		BOARD_CNT boardCnt,
+		FILE_NAME fileName, 
+		FILE_PATH filePath, 
+		to_char(CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate, 
+		FILE_SAVE_NAME fileSaveName, 
+		FILE_SIZE fileSize
+	from (select rownum rno, a.* from cpp_board a where board_type = 'all' order by BOARD_NO desc) cb
+	where 
+		rno between #{pageNum}*10-9 and #{pageNum}*10
+	<if test="memberId != null">
+		and member_id like '%'||#{memberId}||'%' 
+	</if>
+	order by BOARD_NO desc	
+	</select>
+
+	<!-- @메인화면 - 현재 진행중인 프로젝트 정보 -->
+	<select id="memberProject" parameterType="String" resultType="ProjectVO">
+	<![CDATA[
+	select a.project_no projectNo,
+	a.project_name projectName,
+	a.project_status projectStatus,
+	a.PROJECT_DETAIL projectDetail,
+	a.order_company orderCompany,
+	a.obtain_company obtainCompany,
+	a.project_budget projectBudget,
+	to_char(a.start_date, 'yyyy-mm-dd') startDate,
+	to_char(a.end_date, 'yyyy-mm-dd') endDate,
+	b.member_id memberId,
+	b.grade grade
+	from cpp_project a, cpp_project_member b
+	where a.project_no = b.project_no
+	and b.MEMBER_ID = #{memberId}
+	order by a.project_no desc
+	]]>
+	</select>
+	
+	<select id="friendSearchInfo" parameterType="String" resultType="MemberVO">
+	<![CDATA[
+		select
+		MEMBER_ID memberId,
+		MEMBER_NAME memberName,
+		MEMBER_GENDER memberGender,
+		MEMBER_PHONE memberPhone,
+		MEMBER_EMAIL memberEmail,
+		MEMBER_COMPANY memberCompany,
+		MEMBER_DEPT memberDept,
+		MEMBER_RANK memberRank,
+		MEMBER_IMAGE_NAME memberImageName,
+		MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+		MEMBER_IMAGE_PATH memberImagePath,
+		MEMBER_IMAGE_SIZE memberImageSize
+		from cpp_member 
+		where member_id = #{memberId}
+		and member_status='Y'
+		and search_status ='Y'
+	]]>
+	</select>
+	
+	<select id="memberInfo" parameterType="String" resultType="MemberVO">
+	<![CDATA[
+		select
+		MEMBER_ID memberId,
+		MEMBER_PW memberPw,
+		MEMBER_NAME memberName,
+		MEMBER_GENDER memberGender,
+		MEMBER_PHONE memberPhone,
+		MEMBER_EMAIL memberEmail,
+		MEMBER_COMPANY memberCompany,
+		MEMBER_DEPT memberDept,
+		MEMBER_RANK memberRank,
+		CREATE_DATE createDate,
+		LAST_LOGIN_DATE lastLoginDate,
+		LEAVE_DATE leaveDate,
+		MEMBER_STATUS memberStatus,
+		MEMBER_IMAGE_NAME memberImageName,
+		MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+		MEMBER_IMAGE_PATH memberImagePath,
+		MEMBER_IMAGE_SIZE memberImageSize,
+		SEARCH_STATUS searchStatus
+		from cpp_member 
+		where member_id = #{memberId} 
+	]]>
+	</select>
+
+	<select id="memberLogin" parameterType="MemberVO" resultType="MemberVO">
+	<![CDATA[
+		select
+		MEMBER_ID memberId,
+		ENCRYPTION_AES.DEC_AES(MEMBER_PW) memberPw,
+		MEMBER_NAME memberName,
+		MEMBER_GENDER memberGender,
+		MEMBER_PHONE memberPhone,
+		MEMBER_EMAIL memberEmail,
+		MEMBER_COMPANY memberCompany,
+		MEMBER_DEPT memberDept,
+		MEMBER_RANK memberRank,
+		CREATE_DATE createDate,
+		LAST_LOGIN_DATE lastLoginDate,
+		LEAVE_DATE leaveDate,
+		MEMBER_STATUS memberStatus,
+		MEMBER_IMAGE_NAME memberImageName,
+		MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+		MEMBER_IMAGE_PATH memberImagePath,
+		MEMBER_IMAGE_SIZE memberImageSize
+		from cpp_member 
+		where member_id = #{memberId} 
+		and member_pw = ENCRYPTION_AES.ENC_AES(#{memberPw})
+		and member_status = 'Y'
+	]]>
+	</select>
+	
+	<select id="memberIdCheck" parameterType="MemberVO" resultType="MemberVO">
+	<![CDATA[
+		select member_id memberId
+		from cpp_member 
+		where member_id = #{memberId}
+	]]>
+	</select>
+
+	<insert id="memberSave" parameterType="MemberVO">
+	INSERT INTO cpp_member 
+	( MEMBER_ID, MEMBER_PW, MEMBER_NAME, MEMBER_GENDER, MEMBER_PHONE, MEMBER_EMAIL,
+		MEMBER_COMPANY, MEMBER_DEPT, MEMBER_RANK, CREATE_DATE, MEMBER_STATUS, SEARCH_STATUS
+	<if test="memberImageName != null">
+	,MEMBER_IMAGE_NAME, member_Image_Save_Name, MEMBER_IMAGE_SIZE
+	</if>
+	)  VALUES( 
+	#{memberId}, ENCRYPTION_AES.ENC_AES(#{memberPw}), #{memberName}, #{memberGender}, #{memberPhone}, 
+	#{memberEmail}, #{memberCompany}, #{memberDept}, #{memberRank}, sysdate, 'Y', #{searchStatus}
+	<if test="memberImageName != null">
+	,#{memberImageName}, seq_cpp_member_image.nextval||'_'||#{memberImageName}, #{memberImageSize}
+	</if>				
+	)
+	</insert>
+	
+</mapper>

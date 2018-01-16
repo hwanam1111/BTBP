@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="start_bean">
+<!--로그인한 나의 정보  -->
+<select id="viewMyInfo" resultType="MemberVO" parameterType="String">
+SELECT 
+	member_name memberName,
+	member_image_name memberImageName,
+	member_company memberCompany,
+	member_dept memberDept,
+	member_rank memberRank
+FROM cpp_member
+WHERE member_id=#{memberId}
+
+</select>
+
+<!--KPT 처음 화면 진입 -->
+<select id="startKPT" parameterType="int" resultType="KanbanVO">
+<![CDATA[
+SELECT 
+	m.member_id memberId,
+	m.member_name memberName,
+	m.member_dept memberDept,
+	m.member_rank memberRank,
+	m.member_company memberCompany,
+	m.member_image_name memberImageName,
+	j.job_no jobNo,
+	j.job_title jobTitle,
+	j.job_content jobContent,
+	j.job_status jobStatus,
+	j.job_type jobType,
+	j.create_date createDate,
+	to_char(j.start_date, 'yyyy-mm-dd') startDate,
+	to_char(j.end_date, 'yyyy-mm-dd') endDate
+FROM cpp_job j INNER JOIN cpp_member m
+ON j.member_id=m.member_id
+WHERE job_type='kpt' AND project_no=#{projectNo}
+]]>
+
+</select>
+<!--KPT 글 추가  -->
+<insert id="addKPT" parameterType="KanbanVO">
+INSERT INTO cpp_job
+			(job_no,
+			member_id,
+			project_no,
+			job_title,
+			job_content,
+			create_date,
+			job_type,
+			job_status) 
+VALUES (seq_cpp_job_no.nextval,#{memberId}, #{projectNo}, #{jobTitle},
+	#{jobContent},sysdate,'kpt',#{jobStatus})
+</insert>
+<!--해당 속성 KPT 모두 삭제  -->
+<delete id="deleteAllKPT" parameterType="hashmap">
+DELETE FROM cpp_job
+WHERE job_status=#{jobStatus} AND job_type='kpt' AND project_no=#{projectNo}
+</delete>
+<!--KPT 수정  -->
+<update id="modifyKpt" parameterType="KanbanVO">
+UPDATE cpp_job 
+SET	 job_title=#{jobTitle},
+	 create_date = sysdate,
+	 job_content=#{jobContent}
+WHERE job_no=#{jobNo}
+</update>
+<!--해당 KPT 삭제  -->
+<delete id="deleteKpt" parameterType="KanbanVO">
+DELETE FROM cpp_job
+WHERE job_no=#{jobNo}
+
+</delete>	
+
+<!--나의 작업 jsp 관련 mapper  -->
+<!--나의 칸반 목록   -->
+<select id="myKanban" parameterType="hashmap" resultType="JobVO">
+<![CDATA[
+SELECT rNum,jobNo,projectNo,jobTitle,startDate,endDate,jobType,jobStatus,dueDate
+FROM(SELECT rownum rNum,
+        job_no jobNo,
+        project_no projectNo,
+        job_title jobTitle,
+        start_date startDate,
+        end_date endDate,
+        job_type jobType,
+        job_status jobStatus,
+        to_date(to_char(end_date,'yyyymmdd'))-to_date(to_char(sysdate,'yyyymmdd')) dueDate
+FROM (SELECT * FROM cpp_job ORDER BY end_date desc )
+WHERE member_id=#{memberId} AND project_no=#{projectNo} AND job_type='kanban')
+WHERE rNum BETWEEN #{startK} AND #{endK}
+]]>
+</select>
+<!-- 나의 게시글 목록  -->
+<select id="myWork" parameterType="hashmap" resultType="JobVO">
+<![CDATA[
+SELECT rNum,
+		board_no jobNo,
+		project_no projectNo, 
+		member_id memberId,
+		board_type boardType,
+		board_title jobTitle,
+		to_char(create_date,'yyyy-mm-dd') createDate
+FROM(SELECT rownum as rnum, board_no ,project_no , 
+			member_id ,board_type ,board_title,create_date
+		FROM(SELECT * FROM cpp_board WHERE member_id=#{memberId} AND project_no=#{projectNo}
+			ORDER BY create_date desc))
+WHERE rnum BETWEEN #{startW} AND #{endW} 
+]]>
+</select>
+<!--프로젝트 번호에 따른 파일 목록  -->
+<select id="projectFile" parameterType="hashmap" resultType="JobVO">
+<![CDATA[
+SELECT board_no jobNo,
+		project_no projectNo,
+        member_id memberId,
+        board_type boardType,
+        board_title jobTitle,
+        to_char(create_date,'yyyy-mm-dd') createDate,
+        file_name fileName,
+        file_path filePath,
+        file_save_name fileSaveName,
+        file_size fileSize
+FROM cpp_board 
+WHERE file_name IS NOT NULL AND project_no=#{projectNo} AND member_id=#{memberId}
+
+]]>
+</select>
+<!--나의 칸반 갯수 Counting  -->
+<select id="countmyKanban" resultType="int" parameterType="hashmap">
+<![CDATA[
+SELECT count(*) 
+FROM(SELECT rownum rNum,
+        job_no jobNo,
+        project_no projectNo,
+        job_title jobTitle,
+        start_date startDate,
+        end_date endDate,
+        job_type jobType,
+        job_status jobStatus,
+        to_date(to_char(end_date,'yyyymmdd'))-to_date(to_char(sysdate,'yyyymmdd')) dueDate
+FROM (SELECT * FROM cpp_job ORDER BY end_date desc )
+WHERE member_id=#{memberId} AND project_no=43 AND job_type='kanban')
+]]>
+</select>
+
+<!--나의 게시글 갯수 Counting  -->
+<select id="countmyWork" resultType="int" parameterType="hashmap">
+SELECT count(*)
+FROM(SELECT rownum rnum,
+      board_no jobNo,
+       project_no projectNo,
+       member_id memberId, 
+       project_no projectNo,
+       board_type boardType,
+       board_title jobTitle,
+       to_char(create_date,'yyyy-mm-dd') createDate
+FROM (SELECT *
+FROM cpp_board 
+ORDER BY create_date desc)
+WHERE member_id=#{memberId} AND project_no=43)
+
+</select>
+</mapper>

@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hoon_mas">
+	<!-- @게시판 내용 읽기 -->
+	<select id="allFileShareSelect" parameterType="BoardVO" resultType="BoardVO">
+		SELECT 
+		    BOARD_NO boardNo, 
+			MEMBER_ID memberId, 
+			PROJECT_NO projectNo,
+			BOARD_TYPE boardType, 
+			BOARD_TITLE boardTitle, 
+			BOARD_CONTENT boardContent, 
+			BOARD_CNT boardCnt,
+			to_char(CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate
+			<if test="boardType.toString() == 'fileShare'">
+			,
+			FILE_NAME fileName, 
+			FILE_PATH filePath, 
+			FILE_SAVE_NAME fileSaveName, 
+			FILE_SIZE fileSize
+			</if>	
+			
+		    FROM (  SELECT rownum as rnum,BOARD_NO,MEMBER_ID , PROJECT_NO ,BOARD_TYPE ,
+		    				BOARD_TITLE,BOARD_CONTENT,BOARD_CNT ,create_date,file_name,file_path,file_save_name,file_size 	
+		   					FROM ( SELECT * FROM cpp_board ORDER BY board_no DESC) WHERE board_type=#{boardType} AND project_no=#{projectNo})
+		   	WHERE rnum BETWEEN #{startRecord} AND #{endRecord}
+			ORDER BY board_no DESC
+	</select>
+	
+	<select id="allFileSelect" parameterType="BoardVO" resultType="int">
+	SELECT Count(*)
+	FROM CPP_BOARD
+	WHERE project_no = #{projectNo} AND board_type = 'fileShare'
+	</select>
+	
+	<select id="FileShareDetail" parameterType="BoardVO" resultType="BoardVO">
+		select 
+			BOARD_NO boardNo,
+			MEMBER_ID memberId, 
+			PROJECT_NO projectNo,
+			BOARD_TYPE boardType,
+			BOARD_TITLE boardTitle,
+			BOARD_CONTENT boardContent,
+			BOARD_CNT boardCnt,
+			FILE_NAME fileName,
+			FILE_PATH filePath,
+			CREATE_DATE createDate,
+			FILE_SAVE_NAME fileSaveName,
+			FILE_SIZE fileSize
+		from cpp_board
+		where BOARD_NO = #{boardNo}
+	</select>
+	
+	<delete id="FileShareDelete" parameterType="BoardVO">
+		DELETE FROM cpp_board 
+		WHERE BOARD_NO = #{boardNo} and MEMBER_ID = #{memberId}
+	</delete>
+	
+	<insert id="fileShareInsert" parameterType="BoardVO">
+		insert into cpp_board(
+			BOARD_NO,
+			MEMBER_ID,
+			PROJECT_NO,
+			BOARD_TYPE,
+			BOARD_TITLE,
+			BOARD_CONTENT,
+			BOARD_CNT,
+			CREATE_DATE
+			<if test="boardType.toString() eq 'fileShare' and fileName != null">
+			,		
+			FILE_NAME,
+			FILE_SIZE,
+			FILE_SAVE_NAME,
+			FILE_PATH
+			</if>
+			
+		)
+		VALUES(
+			SEQ_CPP_BOARD_NO.nextval,
+			#{memberId},
+			#{projectNo},
+			#{boardType},
+			#{boardTitle},
+			#{boardContent},
+			'0',
+			sysdate
+			<if test="boardType.toString() eq 'fileShare' and fileName != null">
+			,
+			#{fileName},
+			#{fileSize},
+			#{fileSaveName},
+			#{filePath}
+			</if>
+			
+		)
+	</insert>
+	
+	<select id="fileShareSearch" parameterType="BoardVO" resultType="BoardVO">
+	<![CDATA[
+			SELECT 
+		BOARD_NO boardNo,
+			MEMBER_ID memberId, 
+			PROJECT_NO projectNo,
+			BOARD_TYPE boardType,
+			BOARD_TITLE boardTitle,
+			BOARD_CONTENT boardContent,
+			BOARD_CNT boardCnt,
+			FILE_NAME fileName,
+			FILE_PATH filePath,
+			FILE_SAVE_NAME fileSaveName,
+			FILE_SIZE fileSize,
+			CREATE_DATE createDate
+		FROM CPP_BOARD
+		WHERE board_no IN (SELECT board_no
+		FROM (SELECT rownum as rnum, board_no
+				FROM (SELECT *
+						FROM CPP_BOARD
+						WHERE project_no = #{projectNo} AND board_type = 'fileShare' AND MEMBER_ID LIKE #{search}
+						ORDER BY CREATE_DATE DESC
+					 )
+			  )
+		WHERE rnum between #{startrecord} AND #{endrecord})
+		]]>
+	</select>
+	
+	
+	
+	<select id="clickMile" parameterType="MileStoneVO" resultType="MileStoneVO">
+		SELECT 
+			card_no cardNo,
+			card_group cardGroup,
+			check1,check2,check3,check4,check5,check6,check7,check8,check9,check10,check11,check12,
+			card_title	cardTitle
+		FROM cpp_milestone_card_info 
+		WHERE card_title=#{cardTitle}
+	</select>
+<!-- MileStone  -->
+<!-- mileStoneBoard select -->
+	<select id="mileStoneBoardSelect" parameterType="MileStoneVO" resultType="MileStoneVO">
+	SELECT 
+		PROJECT_NO projectNo,
+		ROW_NO rowNo,
+		ROW_NAME rowName,
+		ROW_STATUS rowStatus
+	FROM CPP_MILESTONE_BOARD
+	WHERE project_no = #{projectNo}
+	ORDER BY row_no 
+	</select>
+<!-- mileStoneBoardCard select -->
+	<select id="mileStoneBoardCardSelect" parameterType="MileStoneVO" resultType="MileStoneVO">
+	SELECT 
+		MILESTONE_BOARD_CARD_NO milestoneBoardCardNo,
+		PROJECT_NO projectNo,
+		ROW_NO rowNo,
+		CARD_NO cardNo
+	FROM CPP_MILESTONE_BOARD_CARD
+	WHERE project_no = #{projectNo}
+	</select>
+	<select id="mileStoneDoneCheck" parameterType="MileStoneVO" resultType="int"> 
+	SELECT count(*) 
+	FROM CPP_MILESTONE_BOARD
+	WHERE row_status = 'done' AND project_no = #{projectNo}
+	</select>
+	<delete id="mileStoneBoardCardDelete" >
+	DELETE FROM CPP_MILESTONE_BOARD_CARD WHERE row_no IN (SELECT row_no
+                                                      FROM CPP_MILESTONE_BOARD
+                                                      WHERE project_no = #{projectNo} AND row_status = 'doing')
+	</delete>
+	<delete id="mileStoneBoardDelete">
+	DELETE FROM CPP_MILESTONE_BOARD 
+	WHERE project_no = #{projectNo} AND row_status = 'doing'
+	</delete>
+	<insert id="mileStoneBoardInsert" parameterType="MileStoneVO">
+	INSERT INTO CPP_MILESTONE_BOARD (row_no, project_no, row_name, row_status) 
+	VALUES (#{rowNo}, #{projectNo}, #{rowName}, 'doing')
+	</insert>
+	<insert id="mileStoneBoardCardInsert" parameterType="MileStoneVO">
+	INSERT INTO CPP_MILESTONE_BOARD_CARD (MILESTONE_BOARD_CARD_NO, PROJECT_NO, ROW_NO, CARD_NO )
+	VALUES (seq_cpp_milestone_cart_no.nextval, #{projectNo}, #{rowNo}, #{cardNo})
+	</insert>
+	
+	<!-- 마일스톤 완료 버튼 시  -->
+	<delete id="mileStoneComplete_BoardCardDelete" parameterType="MileStoneVO">
+	DELETE FROM CPP_MILESTONE_BOARD_CARD
+	WHERE project_no = #{projectNo} AND row_no = #{rowNo}
+	</delete>
+	<delete id="mileStoneComplete_BoardDelete" parameterType="MileStoneVO">
+	DELETE FROM CPP_MILESTONE_BOARD
+	WHERE project_no = #{projectNo} AND row_no = #{rowNo}	
+	</delete>
+	<insert id="mileStoneComplete_BoardInsert" parameterType="MileStoneVO">
+	INSERT INTO CPP_MILESTONE_BOARD (row_no, project_no, row_name, row_status) 
+	VALUES (#{rowNo}, #{projectNo}, #{rowName}, 'done')
+	</insert>
+	<insert id="mileStoneComplete_BoardCardInsert" parameterType="MileStoneVO">
+	INSERT INTO CPP_MILESTONE_BOARD_CARD (MILESTONE_BOARD_CARD_NO, PROJECT_NO, ROW_NO, CARD_NO )
+	VALUES (seq_cpp_milestone_cart_no.nextval, #{projectNo}, #{rowNo}, #{cardNo})
+	</insert>
+	<!-- 마일스톤 완료시 점수 입력 시 -->
+	<update id="mileStoneScore_Insert" parameterType="MileStoneVO">
+	UPDATE CPP_MILESTONE_BOARD_CARD  
+	SET ${checkPointName} = #{score}
+	WHERE project_no = #{projectNo} AND row_no = #{rowNo} AND card_no = (SELECT CARD_NO
+  FROM CPP_MILESTONE_CARD_INFO
+  WHERE CARD_TITLE = #{cardTitle})
+	</update>
+	<select id="clickMileSelect" parameterType="MileStoneVO" resultType="MileStoneVO">
+	SELECT PROJECT_NO,
+      ROW_NO,
+      CARD_NO,
+      CHECK1_POINT check1Point,
+      CHECK2_POINT check2Point,
+      CHECK3_POINT check3Point,
+      CHECK4_POINT check4Point,
+      CHECK5_POINT check5Point,
+      CHECK6_POINT check6Point,
+      CHECK7_POINT check7Point,
+      CHECK8_POINT check8Point,
+      CHECK9_POINT check9Point,
+      CHECK10_POINT check10Point,
+      CHECK11_POINT check11Point,
+      CHECK12_POINT check12Point
+	FROM CPP_MILESTONE_BOARD_CARD
+	WHERE project_no = #{projectNo} AND row_no = #{rowNo} AND card_no = (SELECT CARD_NO
+	FROM CPP_MILESTONE_CARD_INFO
+	WHERE CARD_TITLE = #{cardTitle} )
+	</select>
+	<!-- 잘한 점 못한 점  가져오기 -->
+	<select id="mileStoneGoodAndBad_Select" parameterType="MileStoneVO" resultType="MileStoneVO" >
+	SELECT ROW_GOOD rowGood, 
+		   ROW_BAD rowBad
+ 	FROM CPP_MILESTONE_BOARD
+  	WHERE PROJECT_NO = #{projectNo} AND ROW_NO = #{rowNo}
+	</select>
+	<update id="mileStoneGoodAndBad_Insert" parameterType="MileStoneVO">
+	  UPDATE CPP_MILESTONE_BOARD 
+  	  SET row_good = #{rowGood} , row_bad = #{rowBad}
+  	  WHERE project_no = #{projectNo} AND row_no = #{rowNo}
+   </update>
+   <select id="mileStoneGoodAndBad_BoardCardSelect" parameterType="MileStoneVO" resultType="MileStoneVO">
+SELECT rowNo rowNo,
+       CARD_NO cardNo,
+       CHECK1_POINT check1Point, 
+       CHECK2_POINT check2Point, 
+       CHECK3_POINT check3Point, 
+       CHECK4_POINT check4Point, 
+       CHECK5_POINT check5Point, 
+       CHECK6_POINT check6Point, 
+       CHECK7_POINT check7Point, 
+       CHECK8_POINT check8Point, 
+       CHECK9_POINT check9Point, 
+       CHECK10_POINT check10Point, 
+       CHECK11_POINT check11Point, 
+       CHECK12_POINT check12Point,
+       CHECK1 check1,
+       CHECK2 check2,
+       CHECK3 check3,
+       CHECK4 check4,
+       CHECK5 check5,
+       CHECK6 check6,
+       CHECK7 check7,
+       CHECK8 check8,
+       CHECK9 check9,
+       CHECK10 check10,
+       CHECK11 check11,
+       CHECK12 check12,
+       CARD_TITLE cardTitle
+FROM (SELECT ROW_NO rowNo,
+       CARD_NO cardNo,
+       CHECK1_POINT, 
+       CHECK2_POINT,
+       CHECK3_POINT,
+       CHECK4_POINT, 
+       CHECK5_POINT,
+       CHECK6_POINT,
+       CHECK7_POINT,
+       CHECK8_POINT,
+       CHECK9_POINT, 
+       CHECK10_POINT, 
+       CHECK11_POINT, 
+       CHECK12_POINT
+FROM CPP_MILESTONE_BOARD_CARD 
+WHERE row_no = #{rowNo} AND project_no = #{projectNo} ) cpp1 INNER JOIN CPP_MILESTONE_CARD_INFO cpp2
+ON cpp1.cardNo = cpp2.card_no
+   </select>
+ <!-- 프로젝트 메인 부분 -->  
+ <!-- 프로젝트 메인 멤버 4명 가져오기 -->
+ <select id="projectMainMemberList" parameterType="ProjectMemberVO" resultType="ProjectMemberVO">
+   select a.member_id memberId,
+a.project_no projectNo,
+a.grade,
+a.create_date createDate,
+b.MEMBER_NAME memberName,
+b.member_gender memberGender,
+b.member_phone memberPhone,
+b.member_email memberEmail,
+b.member_company memberCompany,
+b.member_dept memberDept,
+b.member_rank memberRank,
+b.member_image_name memberImageName,
+c.CREATE_DATE loginStatus
+from cpp_project_member a, cpp_member b, cpp_login c
+where a.member_id = b.member_id
+and a.member_id = c.member_id(+)
+and project_no = #{projectNo}
+and member_status = 'Y'
+ORDER BY createDate DESC
+ </select>
+ <!-- 프로젝트 메인 최신 뉴스 가져오기 -->
+ <select id="projectMainBoardList" parameterType="BoardVO" resultType="BoardVO">
+<![CDATA[
+SELECT board_no boardNo, 
+	   member_id memberId, 
+	   project_no projectNo, 
+	   board_type boardType, 
+	   board_title boardTitle, 
+	   board_content boardContent,
+      file_name fileName,
+      file_path filePath,
+      file_save_name fileSaveName,
+      file_size fileSize,
+       TO_CHAR(create_date, 'yyyy-mm-dd') createDate 
+       FROM(SELECT rownum as rnum,board_no ,member_id ,project_no ,board_type ,board_title ,board_content,
+       		file_name,file_path,file_save_name,file_size ,create_date       
+      		FROM (SELECT * FROM cpp_board WHERE create_date > sysdate-2 AND project_no = #{projectNo} ORDER BY create_date desc))
+WHERE rnum BETWEEN #{startRecord} AND #{endRecord}
+	]]>
+ </select>
+ <!--프로젝트 메인 최신뉴스 카운트 개수  -->
+ <select id="countProjectMainBoardList" parameterType="BoardVO" resultType="int">
+ SELECT count(*)
+FROM(SELECT board_no boardNo, 
+	   member_id memberId, 
+	   project_no projectNo, 
+	   board_type boardType, 
+	   board_title boardTitle, 
+	   board_content boardContent,
+      file_name fileName,
+      file_path filePath,
+      file_save_name fileSaveName,
+      file_size fileSize, 
+      TO_CHAR(create_date, 'yyyy-mm-dd') createDate  
+FROM cpp_board 
+WHERE create_date > sysdate-2 AND project_no = #{projectNo}
+ORDER BY create_date desc)
+ 
+ 
+ </select>
+ 
+ <!-- 프로젝트 메인 최신 작업 해야할 것 가져오기 (deadline 5일 남은 것) -->
+ <select id="projectMainJobList" parameterType="JobVO" resultType="JobVO">
+<![CDATA[ 
+ SELECT jobNo,memberId,projectNo,jobTitle,startDate,endDate,jobType,jobStatus ,dueDate
+FROM (SELECT rownum rNum,
+        job_no jobNo,
+        member_id memberId,
+        project_no projectNo,
+        job_title jobTitle,
+        start_date startDate,
+        end_date endDate,
+        job_type jobType,
+        job_status jobStatus,
+        to_date(to_char(end_date,'yyyymmdd'))-to_date(to_char(sysdate,'yyyymmdd')) dueDate
+FROM (SELECT * FROM cpp_job ORDER BY end_date desc )
+WHERE project_no=#{projectNo})
+WHERE dueDate BETWEEN 0 AND 5
+	]]>
+ </select>
+ <!-- 프로젝트 메인 팀별 작업 현황 가져오는 sql 문(각 인원 당 팀원 작업 현황) -->
+ <select id="projectMainTeamWorkingCheck" parameterType="JobVO" resultType="JobVO">
+ SELECT grade grade, 
+ job_status jobStatus, 
+ count(*) count
+FROM (SELECT *
+FROM CPP_JOB
+WHERE project_no = #{projectNo} AND job_type = 'kanban') j
+INNER JOIN CPP_PROJECT_MEMBER m
+ON j.MEMBER_ID = m.MEMBER_ID
+GROUP BY grade, job_status
+ </select>
+ <select id="projectMainKanBanCheck" parameterType="JobVO" resultType="JobVO">
+ SELECT JOB_STATUS jobStatus , count(*) count
+ FROM CPP_JOB
+ WHERE project_no = #{projectNo} AND job_type='kanban'
+ GROUP BY JOB_STATUS
+ </select>
+ <!-- 중복되지 않은 grade 가져오기 위한 sql -->
+ <select id="projectMainTeamWorkingGrade" parameterType="JobVO" resultType="JobVO">
+  SELECT grade grade, 
+ count(*) count
+FROM (SELECT *
+FROM CPP_JOB
+WHERE project_no = #{projectNo} AND job_type = 'kanban') j
+INNER JOIN CPP_PROJECT_MEMBER m
+ON j.MEMBER_ID = m.MEMBER_ID
+GROUP BY grade
+ </select>
+</mapper>

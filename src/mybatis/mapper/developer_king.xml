@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="developer_king">
+<!-- ** 케시판 페이징 **  -->
+<select id="boardCount" resultType="int" parameterType="BoardVO">
+SELECT Count(*)
+FROM cpp_board 
+WHERE board_type=#{boardType} AND project_no=#{projectNo} 
+<if test="memberId != null">
+	AND member_id=#{memberId} 
+</if>
+
+</select>
+
+<!-- ★ 팀 게시글 입력하기 -->
+	<insert id="ProjectBoardInsert" parameterType="BoardVO">
+		INSERT INTO cpp_board(
+			BOARD_NO,
+			MEMBER_ID,
+			PROJECT_NO,
+			BOARD_TYPE,
+			BOARD_TITLE,
+			BOARD_CONTENT,
+			BOARD_CNT,
+			CREATE_DATE
+			<if test="boardType.toString() eq 'board' and fileName != null">
+			,
+			FILE_NAME,
+			FILE_SIZE,
+			FILE_SAVE_NAME,
+			FILE_PATH
+			</if>
+			<if test="boardType.toString() eq 'version' and fileName != null">
+			,
+			FILE_NAME,
+			FILE_SIZE,
+			FILE_SAVE_NAME,
+			FILE_PATH
+			</if>
+		)
+		VALUES(
+			SEQ_CPP_BOARD_NO.nextval,
+			#{memberId},
+			#{projectNo},
+			#{boardType},
+			#{boardTitle},
+			#{boardContent},
+			'0',
+			sysdate
+			<if test="boardType.toString() eq 'board' and fileName != null">
+			,
+			#{fileName},
+			#{fileSize},
+			#{fileSaveName},
+			#{filePath}
+			</if>
+			<if test="boardType.toString() eq 'version' and fileName != null">
+			,
+			#{fileName},
+			#{fileSize},
+			#{fileSaveName},
+			#{filePath}
+			</if>
+		)
+	</insert>
+	
+	
+	
+<!-- ★ 팀 게시글 목록보기 -->
+	<select id="ProjectBoardList" resultType="BoardVO" parameterType="BoardVO">
+	  SELECT 	BOARD_NO boardNo, 
+		MEMBER_ID memberId, 
+		PROJECT_NO projectNo,
+		BOARD_TYPE boardType, 
+		BOARD_TITLE boardTitle, 
+		BOARD_CONTENT boardContent, 
+		BOARD_CNT boardCnt,
+		to_char(CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate
+		<if test="boardType.toString() == 'board'">
+		,
+		FILE_NAME fileName, 
+		FILE_PATH filePath, 
+		FILE_SAVE_NAME fileSaveName, 
+		FILE_SIZE fileSize
+		</if>	
+    FROM (  SELECT rownum as rnum,BOARD_NO,MEMBER_ID , PROJECT_NO ,BOARD_TYPE ,
+    				BOARD_TITLE,BOARD_CONTENT,BOARD_CNT ,create_date,file_name,file_path,file_save_name,file_size 	
+   					FROM ( SELECT * FROM cpp_board ORDER BY board_no DESC) WHERE board_type=#{boardType} AND project_no=#{projectNo})
+   	WHERE rnum BETWEEN #{startRecord} AND #{endRecord}
+	
+
+	</select>	
+	
+	
+<!-- ★ 팀 게시글 작성자 검색 -->
+	<select id="WriterFind" resultType="BoardVO">
+	SELECT 
+		BOARD_NO boardNo, 
+		MEMBER_ID memberId, 
+		PROJECT_NO projectNo,
+		BOARD_TYPE boardType, 
+		BOARD_TITLE boardTitle, 
+		BOARD_CONTENT boardContent, 
+		BOARD_CNT boardCnt,
+		FILE_NAME fileName, 
+		FILE_PATH filePath, 
+		to_char(CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate, 
+		FILE_SAVE_NAME fileSaveName, 
+		FILE_SIZE fileSize
+	FROM cpp_board
+	WHERE BOARD_TYPE = #{boardType} and project_no= #{projectNo}
+	<if test="memberId != null">
+		and member_id like '%'||#{memberId}||'%' 
+	</if>
+	order by BOARD_NO desc
+	</select>		
+	
+
+<!-- ★ 팀 게시글 내용 보기 -->
+	<select id="ProjectBoardDetail" parameterType="BoardVO" resultType="BoardVO">
+		SELECT 
+			BOARD_NO boardNo,
+			MEMBER_ID memberId, 
+			PROJECT_NO projectNo,
+			BOARD_TYPE boardType,
+			BOARD_TITLE boardTitle,
+			BOARD_CONTENT boardContent,
+			BOARD_CNT boardCnt,
+			CREATE_DATE createDate
+			<if test="boardType.equals('board')">
+			,
+			FILE_NAME fileName,
+			FILE_PATH filePath,
+			FILE_SAVE_NAME fileSaveName,
+			FILE_SIZE fileSize
+			</if>
+		FROM   cpp_board
+		WHERE BOARD_NO = #{boardNo}
+	</select>	
+	
+	
+<!-- ★ 팀 댓글 입력 -->
+	<insert id="ProjectReplySave" parameterType="ReplyVO">
+	<![CDATA[
+		INSERT into cpp_reply(REPLY_NO, BOARD_NO, MEMBER_ID, REPLY_CONTENT, CREATE_DATE)
+		VALUES(seq_cpp_reply_no.nextval, #{boardNo}, #{memberId}, #{replyContent}, sysdate)
+	]]>
+	</insert>	
+	
+	
+<!-- ★ 팀 게시글 댓글 리스트 조회 -->
+	<select id="ProjectReplyList" parameterType="BoardVO" resultType="ReplyVO">
+		SELECT
+			REPLY_NO replyNo,
+			BOARD_NO boardNo,
+			MEMBER_ID memberId, 
+			REPLY_CONTENT replyContent,
+			CREATE_DATE createDate
+		FROM cpp_reply
+		WHERE BOARD_NO = #{boardNo}
+		order by CREATE_DATE
+	</select>
+
+<!-- ★ (팀 게시글 삭제할때) "댓글"도 함께 삭제 (파라미터 Bvo) -->
+	<delete id="ProjectBoardReplyDelete" parameterType="BoardVO">
+		DELETE FROM cpp_reply 
+		WHERE BOARD_NO = #{boardNo}
+	</delete>	
+	
+<!-- ★ 팀 게시글 삭제 -->		
+	<delete id="ProjectBoardDelete" parameterType="BoardVO">
+		DELETE FROM cpp_board 
+		WHERE BOARD_NO = #{boardNo} and MEMBER_ID = #{memberId}
+	</delete>
+	
+<!-- ★ 팀 댓글 삭제(파라미터 Rvo)-->
+	<delete id="ProjectBoardReplyDel" parameterType="ReplyVO">
+		DELETE FROM cpp_reply 
+		WHERE BOARD_NO = #{boardNo} and REPLY_NO = #{replyNo} and MEMBER_ID = #{memberId}
+	</delete>		
+	
+	
+<!-- ★ 게시글 수정  -->	
+		<update id="ProjectBoardUpdate" parameterType="BoardVO">
+		update cpp_board 
+		set 
+			board_title = #{boardTitle},  
+			board_content = #{boardContent}
+		<if test="fileName != null">
+		    ,
+			file_name = #{fileName},
+			file_size = #{fileSize},
+			file_save_name = #{fileSaveName},
+			file_path = #{filePath}
+		</if> 			
+			,
+			create_date = sysdate
+		where board_no = #{boardNo} and member_id = #{memberId}
+	</update>	
+	
+	
+		
+	
+	
+	
+	
+	
+	
+</mapper>

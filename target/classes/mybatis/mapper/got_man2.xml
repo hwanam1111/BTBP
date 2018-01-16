@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="got_man2">
+
+<!-- @종료 3일 남은 업무 리스트 -->
+<select id="endJobList" parameterType="ProjectMemberVO" resultType="JobVO">
+select
+    job_no jobNo,
+    member_id memberId,
+    project_no projectNo,
+    job_title jobTitle,
+    job_content jobContent,
+    to_char(create_date, 'hh24:mi') createDate,
+    start_date startDate,
+    to_char(end_date, 'yyyy-mm-dd') endDate,
+    upper(job_type) jobType,
+    job_status jobStatus 
+from cpp_job
+where project_no = #{projectNo}
+and to_char(end_Date, 'yyyymmdd') >= to_char(sysdate+3, 'yyyymmdd')
+and job_type != 'kpt'
+order by end_date
+</select>
+
+<!-- @금일 등록된 업무 리스트 -->
+<select id="newJobList" parameterType="ProjectMemberVO" resultType="JobVO">
+select
+    job_no jobNo,
+    member_id memberId,
+    project_no projectNo,
+    job_title jobTitle,
+    job_content jobContent,
+    to_char(create_date, 'hh24:mi') createDate,
+    start_date startDate,
+    to_char(end_date, 'yyyy-mm-dd') endDate,
+    upper(job_type) jobType,
+    job_status jobStatus 
+from cpp_job
+where project_no = 43
+and to_char(create_date, 'yyyymmdd') >= to_char(sysdate, 'yyyymmdd')
+and job_type != 'kpt'
+order by create_date desc
+</select>
+
+<!-- @칸반보드 작업 전체 삭제 -->
+<select id="kanbanAlldel" parameterType="JobVO">
+	delete from cpp_job where project_no = #{projectNo} and job_status=#{jobStatus} and job_type = 'kanban'
+</select>
+
+<!-- 형상관리 게시판 리스트 조회 -->
+<select id="versionBoardList" parameterType="BoardVO" resultType="BoardVO">
+	select 
+		cm.MEMBER_NAME memberName,
+		cm.MEMBER_GENDER memberGender,
+		cm.MEMBER_PHONE memberPhone,
+		cm.MEMBER_EMAIL memberEmail,
+		cm.MEMBER_COMPANY memberCompany,
+		cm.MEMBER_DEPT memberDept,
+		cm.MEMBER_RANK memberRank,
+		cm.MEMBER_IMAGE_NAME memberImageName,
+		cm.MEMBER_IMAGE_SAVE_NAME memberImageSaveName, 
+		cm.MEMBER_IMAGE_PATH memberImagePath,
+		cm.MEMBER_IMAGE_SIZE memberImageSize,
+		cb.BOARD_NO boardNo, 
+		cb.MEMBER_ID memberId, 
+		cb.PROJECT_NO projectNo,
+		cb.BOARD_TYPE boardType, 
+		cb.BOARD_TITLE boardTitle, 
+		cb.BOARD_CONTENT boardContent, 
+		cb.BOARD_CNT boardCnt,
+		cb.FILE_NAME fileName, 
+		cb.FILE_PATH filePath, 
+		to_char(cb.CREATE_DATE, 'yyyy-mm-dd HH24:MI') createDate, 
+		cb.FILE_SAVE_NAME fileSaveName, 
+		cb.FILE_SIZE fileSize
+	from cpp_board cb, cpp_member cm
+	where cb.member_id = cm.member_id 
+	and board_type = 'version'
+	and project_no = #{projectNo}
+	order by BOARD_NO desc	
+</select>
+
+<!-- 3-1. 프로젝트 정보 아이디 수정 -->
+<update id="PMtransfer1" parameterType="ProjectMemberVO">
+	update cpp_project set member_id = #{memberId} where project_no = #{projectNo}
+</update>
+
+<!-- 3-2. 인수자 권한 PM으로 수정 -->
+<update id="PMtransfer2" parameterType="ProjectMemberVO">
+	update cpp_project_member set grade ='PM' where member_id = #{memberId} and project_no = #{projectNo}
+</update>
+
+<!-- 3-3. 인계자 권한 OTHER로 수정 -->
+<update id="PMtransfer3" parameterType="ProjectMemberVO">
+	update cpp_project_member set grade ='OTHER' where member_id = #{memberId} and project_no = #{projectNo}
+</update>
+
+<!-- @나와 함께 진행한 프로젝트 목록 -->
+<select id="togetherProject" parameterType="FriendVO" resultType="ProjectVO">
+	select 
+	    a.project_no projectNo, 
+	    b.project_name projectName,
+	    to_char(b.start_date, 'yyyy-mm-dd') startDate,
+	    to_char(b.end_date, 'yyyy-mm-dd') endDate,
+	    b.project_status projectStatus
+	from cpp_project_member a, cpp_project b
+	where a.project_no = b.project_no
+			and a.member_id= #{friendId}
+			and a.project_no in
+						(select project_no
+						from cpp_project_member
+						where member_id = #{memberId})
+</select>
+
+<!-- @프로젝트 멤버 수정 -->
+<update id="memberGradeUpdate" parameterType="ProjectMemberVO">
+	update cpp_project_member set grade = #{grade} 
+	where member_id = #{memberId} and project_no =#{projectNo} and grade not in('PM')
+</update>
+
+<!-- @프로젝트 멤버 삭제 -->
+<delete id="ProjectMemberDelete" parameterType="ProjectMemberVO">
+	delete from cpp_project_member where member_id = #{memberId} and project_no =#{projectNo} and grade not in('PM')
+</delete>
+
+<!-- @프로젝트 멤버 추가 -->
+<insert id="memberAddInsert" parameterType="ProjectMemberVO">
+	insert into cpp_project_member values(#{memberId}, #{projectNo}, #{grade}, sysdate)
+</insert>
+
+<!-- @업무 수정 -->
+<update id="jobUpdate" parameterType="JobVO">
+	update cpp_job 
+	set 
+		job_content = #{jobContent}, 
+		job_title = #{jobTitle},
+		start_date = to_date(#{startDate}, 'yyyy/mm/dd'), 
+		end_date = to_date(#{endDate}, 'yyyy/mm/dd')
+	where job_no = #{jobNo}
+</update>
+
+
+<!-- @업무 등록 -->
+<insert id="jobInsert" parameterType="JobVO">
+	insert into cpp_job(
+		job_no, 
+		member_id, 
+		project_no, 
+		job_content, 
+		create_date, 
+		job_type, 
+		job_status, 
+		job_title,
+		start_date,
+		end_date
+		)
+	values(
+		seq_cpp_job_no.nextval,
+		#{memberId},
+		#{projectNo},
+		#{jobContent},
+		sysdate,
+		#{jobType},
+		#{jobStatus},
+		#{jobTitle},
+		to_date(#{startDate}, 'yyyy/mm/dd'),
+		to_date(#{endDate}, 'yyyy/mm/dd')
+	)
+</insert>
+
+<!-- @업무 삭제 -->
+<delete id="jobDelete" parameterType="JobVO">
+	delete from cpp_job where job_no = #{jobNo} and job_type = #{jobType}
+</delete>
+
+<!-- @칸반 상태 업데이트 -->
+<update id="kanbanStatusUp" parameterType="JobVO">
+	update cpp_job set job_status = #{jobStatus} where job_no = #{jobNo}
+</update>
+
+<!-- @칸반 리스트 조회 -->
+<select id="kanbanList" parameterType="ProjectMemberVO" resultType="JobVO">
+select
+	job_no jobNo,
+	job_title jobTitle,
+	member_id memberId,
+	project_no projectNo,
+	job_content jobContent,
+	to_char(create_date, 'yyyy/mm/dd') createDate,
+	to_char(start_date, 'yyyy/mm/dd') startDate,
+	to_char(end_date, 'yyyy/mm/dd') endDate,
+	job_type jobType,
+	job_status jobStatus
+from cpp_job
+where project_no = #{projectNo}
+and job_type='kanban'
+order by job_no desc
+</select>
+
+<!-- @간트차트 리스트 조회 -->
+<select id="ganttList" parameterType="ProjectMemberVO" resultType="JobVO">
+select
+	job_no jobNo,
+	job_title jobTitle,
+	member_id memberId,
+	project_no projectNo,
+	job_content jobContent,
+	to_char(create_date, 'yyyy-mm-dd') createDate,
+	to_char(start_date, 'yyyy-mm-dd') startDate,
+	to_char(end_date, 'yyyy-mm-dd') endDate,
+	job_type jobType,
+	job_status jobStatus
+from cpp_job
+where project_no = #{projectNo}
+and job_type='gantt'
+order by start_date asc
+</select>
+
+<!-- @프로젝트 업무 정보 -->
+<select id="jobInfo" parameterType="JobVO" resultType="JobVO">
+select
+	job_no jobNo,
+	job_title jobTitle,
+	a.member_id memberId,
+	project_no projectNo,
+	job_content jobContent,
+	to_char(a.create_date, 'yyyy-mm-dd') createDate,
+	to_char(start_date, 'yyyy-mm-dd') startDate,
+	to_char(end_date, 'yyyy-mm-dd') endDate,
+	job_type jobType,
+	job_status jobStatus,
+	member_name	memberName,
+	member_gender	memberGender,
+	member_phone	memberPhone,
+	member_email	memberEmail,
+	member_company	memberCompany,
+	member_dept	memberDept,
+	member_rank	memberRank,
+	member_image_name	memberImageName
+from cpp_job a, cpp_member b
+where a.member_id = b.member_id
+and a.job_no = #{jobNo}
+</select>
+
+<!-- @프로젝트 업무 리스트 -->
+<select id="projectJobList" parameterType="ProjectMemberVO" resultType="JobVO">
+select
+	job_no jobNo,
+	job_title jobTitle,
+	member_id memberId,
+	project_no projectNo,
+	job_content jobContent,
+	create_date createDate,
+	to_char(start_date, 'yyyy,mm,dd') startDate,
+	to_char(end_date, 'yyyy,mm,dd') endDate,
+	job_type jobType,
+	job_status jobStatus
+from cpp_job
+where project_no = #{projectNo}
+</select>
+
+<!-- @프로젝트 정보 수정 -->
+<update id="projectInfoUpdate" parameterType="ProjectVO">
+	update cpp_project 
+	set 
+		project_name = #{projectName}, 
+		project_status = #{projectStatus},
+		project_detail = #{projectDetail},
+		order_company = #{orderCompany},
+		obtain_company = #{obtainCompany},
+		project_budget = #{projectBudget},
+		start_date = #{startDate},
+		end_date = #{endDate}
+	where project_no = #{projectNo}
+</update>
+
+<!-- @팀 채팅 메세지 보내기 -->
+<insert id="chatSend" parameterType="ChattingVO">
+	insert into CPP_CHATTING values(#{memberId}, #{projectNo}, #{chatMessage}, sysdate)
+</insert>
+
+<!-- @팀 채팅 메세지 리스트 -->
+<select id="chatList" parameterType="ChattingVO" resultType="ChattingVO">
+	select a.member_id memberId,
+	a.project_no projectNo,
+	a.CHAT_MESSAGE chatMessage,
+	a.create_date createDate,
+	b.MEMBER_NAME memberName,
+	b.member_image_name memberImageName
+	from cpp_chatting a, cpp_member b
+	where a.member_id = b.member_id
+	and a.project_no = #{projectNo}
+	order by a.create_date asc
+</select>
+
+<!-- @프로젝트 멤버 리스트 조회 -->
+<select id="projectMemberList" parameterType="ProjectMemberVO" resultType="ProjectMemberVO">
+select a.member_id memberId,
+a.project_no projectNo,
+a.grade,
+b.MEMBER_NAME memberName,
+b.member_gender memberGender,
+b.member_phone memberPhone,
+b.member_email memberEmail,
+b.member_company memberCompany,
+b.member_dept memberDept,
+b.member_rank memberRank,
+b.member_image_name memberImageName,
+c.CREATE_DATE loginStatus
+from cpp_project_member a, cpp_member b, cpp_login c
+where a.member_id = b.member_id
+and a.member_id = c.member_id(+)
+and project_no = #{projectNo}
+and member_status = 'Y'
+order by a.create_date desc
+</select>
+
+<!-- @프로젝트 기본정보 조회 -->
+<select id="projectInfo" parameterType="ProjectMemberVO" resultType="ProjectVO" >
+ select 
+	PROJECT_NO	projectNo,
+	PROJECT_NAME	projectName,
+	PROJECT_STATUS	projectStatus,
+	PROJECT_DETAIL		projectDetail,
+	ORDER_COMPANY	orderCompany,
+	OBTAIN_COMPANY	obtainCompany,
+	PROJECT_BUDGET	projectBudget,
+	to_char(START_DATE, 'yyyy-mm-dd')	startDate,
+	to_char(END_DATE, 'yyyy-mm-dd')	endDate,
+	MEMBER_ID	memberId
+ from cpp_project
+ where project_no = #{projectNo}
+</select>
+
+<!-- @프로젝트 멤버인지 확인 쿼리 -->
+<select id="projectMainAccess" parameterType="ProjectMemberVO" resultType="int">
+		select count(*) cnt
+		from cpp_project_member
+		where project_No = #{projectNo} AND member_id = #{memberId}
+	</select>
+	
+</mapper>

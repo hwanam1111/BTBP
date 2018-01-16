@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="btbp.model.BoardVO" alias="BoardVO" />
+		<typeAlias type="btbp.model.ChattingVO" alias="ChattingVO" />
+		<typeAlias type="btbp.model.FriendVO" alias="FriendVO" />
+		<typeAlias type="btbp.model.GanttChartVO" alias="GanttChartVO" />
+		<typeAlias type="btbp.model.JobVO" alias="JobVO" />
+		<typeAlias type="btbp.model.KanbanVO" alias="KanbanVO" />
+		<typeAlias type="btbp.model.LoginVO" alias="LoginVO" />
+		<typeAlias type="btbp.model.MemberVO" alias="MemberVO" />
+		<typeAlias type="btbp.model.MessageVO" alias="MessageVO" />
+		<typeAlias type="btbp.model.ProjectMemberVO" alias="ProjectMemberVO" />
+		<typeAlias type="btbp.model.ProjectVO" alias="ProjectVO" />
+		<typeAlias type="btbp.model.ReplyVO" alias="ReplyVO" />
+		<typeAlias type="btbp.model.MileStoneVO" alias="MileStoneVO" />
+	</typeAliases>
+</configuration>
