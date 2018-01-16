@@ -304,7 +304,7 @@ public class FileShareController {
 		public ModelAndView fileShareSearch(String search, HttpSession session){
 			List<BoardVO> bList;
 			String searchPlusCheck = "%"+search+"%";
-			HashMap map = new HashMap();
+			HashMap map = new HashMap<>();
 			int projectNo = (int)session.getAttribute("projectNo");
 			int nowpagenum=1;
 	        int startRecord = nowpagenum*10-(10-1);
