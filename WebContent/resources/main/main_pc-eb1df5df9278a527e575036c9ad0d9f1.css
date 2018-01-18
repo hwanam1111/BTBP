@@ -1,48 +1,49 @@
 @CHARSET "UTF-8";
+@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
 
-@font-face {
- font-family: 'Spoqa Han Sans';
- font-weight: normal; 
- src: url('../../font/SpoqaHanSans-Regular-3e019a62f664fb2e711e0fc93e68e0ff.eot');
- src: local(※), url('../font/SpoqaHanSans-Regular-a0421d301d2d7796e0e055857cd38c50.woff') format('woff');
-}
-@font-face {
- font-family: 'Spoqa Han Sans Thin';
- font-weight: normal;
- src: url('../../font/SpoqaHanSans-Thin-75b1ef766eabb77c70bf1010beda7a10.eot');
- src: local(※), url('../font/SpoqaHanSans-Thin-f0c07e7d12e24bdb03573584fc1b4ec6.woff') format('woff');
-}
+/* @font-face { */
+/*  font-family: 'Spoqa Han Sans'; */
+/*  font-weight: normal;  */
+/*  src: url('../../font/SpoqaHanSans-Regular-3e019a62f664fb2e711e0fc93e68e0ff.eot'); */
+/*  src: local(※), url('../font/SpoqaHanSans-Regular-a0421d301d2d7796e0e055857cd38c50.woff') format('woff'); */
+/* } */
+/* @font-face { */
+/*  font-family: 'Spoqa Han Sans Thin'; */
+/*  font-weight: normal; */
+/*  src: url('../../font/SpoqaHanSans-Thin-75b1ef766eabb77c70bf1010beda7a10.eot'); */
+/*  src: local(※), url('../font/SpoqaHanSans-Thin-f0c07e7d12e24bdb03573584fc1b4ec6.woff') format('woff'); */
+/* } */
 
-@font-face {
- font-family: 'Raleway';
- font-weight: normal; 
- src: url('../font/raleway-regular-373963fcee204d3ced80cc2373426ba9.eot');
- src: local(※), url('../font/raleway-regular-e2a42f14d410966808fa3e1a6c6610ed.woff') format('woff');
-}
-@font-face {
- font-family: 'Raleway Light';
- font-weight: normal; 
- src: url('../font/raleway-extralight-ae96d5c702c0507eef98fc8216c1cf68.eot');
- src: local(※), url('../font/raleway-extralight-cec3113c150ebaccfadd249d6a6c6fe3.woff') format('woff');
-}
-@font-face {
- font-family: 'Raleway Thin';
- font-weight: normal; 
- src: url('../font/raleway-thin-ef3c9909acf5f99eb1f8ba9f4c505395.eot');
- src: local(※), url('../font/raleway-thin-853cc2d80ab72d6a0ac1f8ecbc5f50c6.woff') format('woff');
-}
-@font-face {
- font-family: 'Raleway Bold';
- font-weight: normal; 
- src: url('../font/raleway-bold-80d2450c8f23a87a54f56cc3172c26f3.eot');
- src: local(※), url('../font/raleway-bold-8548037bd586a43acab45a89220232a7.woff') format('woff');
-}
-@font-face {
- font-family: 'NotoSansCJKkr';
- font-weight: normal; 
- src: url('../font/NotoSansCJKkr-Regular-19b7d8d4011e8f88930022704558246d.otf');
- src: local(※), url('../font/NotoSansCJKkr-Regular-19b7d8d4011e8f88930022704558246d.otf') format('otf');
-}
+/* @font-face { */
+/*  font-family: 'Raleway'; */
+/*  font-weight: normal;  */
+/*  src: url('../font/raleway-regular-373963fcee204d3ced80cc2373426ba9.eot'); */
+/*  src: local(※), url('../font/raleway-regular-e2a42f14d410966808fa3e1a6c6610ed.woff') format('woff'); */
+/* } */
+/* @font-face { */
+/*  font-family: 'Raleway Light'; */
+/*  font-weight: normal;  */
+/*  src: url('../font/raleway-extralight-ae96d5c702c0507eef98fc8216c1cf68.eot'); */
+/*  src: local(※), url('../font/raleway-extralight-cec3113c150ebaccfadd249d6a6c6fe3.woff') format('woff'); */
+/* } */
+/* @font-face { */
+/*  font-family: 'Raleway Thin'; */
+/*  font-weight: normal;  */
+/*  src: url('../font/raleway-thin-ef3c9909acf5f99eb1f8ba9f4c505395.eot'); */
+/*  src: local(※), url('../font/raleway-thin-853cc2d80ab72d6a0ac1f8ecbc5f50c6.woff') format('woff'); */
+/* } */
+/* @font-face { */
+/*  font-family: 'Raleway Bold'; */
+/*  font-weight: normal;  */
+/*  src: url('../font/raleway-bold-80d2450c8f23a87a54f56cc3172c26f3.eot'); */
+/*  src: local(※), url('../font/raleway-bold-8548037bd586a43acab45a89220232a7.woff') format('woff'); */
+/* } */
+/* @font-face { */
+/*  font-family: 'NotoSansCJKkr'; */
+/*  font-weight: normal;  */
+/*  src: url('../font/NotoSansCJKkr-Regular-19b7d8d4011e8f88930022704558246d.otf'); */
+/*  src: local(※), url('../font/NotoSansCJKkr-Regular-19b7d8d4011e8f88930022704558246d.otf') format('otf'); */
+/* } */
 
 /* skip */
 .skip{position:absolute;display:block;height:1px;width:1px;margin:0 -1px -1px 0;padding:0;overflow:hidden;font-size:0;line-height:0}
@@ -50,6 +51,7 @@
 .skip:active, .skip:focus{position:absolute;top:0;left:0;width:100%; height:auto;margin:0;padding:7px 0;text-indent:10px;font-weight:bold;font-size:12px;color:#fff;background:#000;line-height:1;text-align:center;z-index:1100}
 
 /* reset */
+*{font-family: 'Hanna', sans-serif;}
 html{overflow-y:scroll}
 html,body{width:100%;height:100%}
 html,body,div,p,img,span,a,strong,pre,h1,h2,h3,ul,li,dl,dt,dd,table,tbody,tr,th,td,input,textarea{margin:0;padding:0}
@@ -72,10 +74,10 @@ input[type=text], input[type=password]{line-height:initial !important;border-rad
 .blind{overflow:hidden;position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;font-size:1px;height:1px}
 
 /* header */
-.header{position:fixed;height:80px;top:0;left:0;width:100%;padding:0;border-bottom:1px solid #CDDCE5;border-bottom:1px solid rgba(0,0,0,0.15);z-index:50;background:url("../images/main_bg.jpg") no-repeat}
-.header .header_bg{position:absolute;width:100%;height:78px;margin-top:2px;background:rgba(255,255,255,0.05)}
-.header.alpha h1 a{background:url("/BTBP/resources/images/main_bg.jpg2") no-repeat}
-.header h1 a{background:url("/BTBP/resources/images/main_bg.jpg2") no-repeat}
+.header{position:fixed;height:80px;top:0;left:0;width:100%;padding:0;z-index:50;}
+.header .header_bg{position:absolute;width:100%;height:78px;margin-top:2px;background-color: #fff;}
+/* .header.alpha h1 a{background:url("/BTBP/resources/images/main_bg.jpg2") no-repeat} */
+/* .header h1 a{background:url("/BTBP/resources/images/main_bg.jpg2") no-repeat} */
 .header h1 a, .header #logo_teamup{fill:#ffffff}
 .header .main_wrap{padding-top:20px;min-width:800px!important}
 .header h1{position:relative;width:138px;height:40px}
@@ -139,7 +141,7 @@ input[type=text], input[type=password]{line-height:initial !important;border-rad
 .dot_menu{background-color:#ffffff;position:absolute;top:59px;right:26px;box-shadow:0 1px 3px rgba(0,0,0,0.3);display:none}
 .dot_menu ul{width:300px;height:159px;padding:10px}
 .dot_menu ul li{float:left;width:98px;height:76px;margin:1px}
-.dot_menu ul li a{background:url("/BTBP/resources/images/main_bg.jpg2") no-repeat;display:block;width:98px;height:23px;text-align:center;background-position:-2px -6px;padding-top:53px;border:1px solid #ffffff}
+.dot_menu ul li a{display:block;width:98px;height:23px;text-align:center;background-position:-2px -6px;padding-top:53px;border:1px solid #ffffff}
 .dot_menu ul li a:hover{background-color:#f4f4f4;border:1px solid #e7e7e7;text-decoration:none}
 .dot_menu ul li a.moa_menu{background-position:-84px -6px}
 .dot_menu ul li a.cloud_menu{background-position:-164px -4px}
@@ -422,7 +424,7 @@ a.btn_blue:hover{background:#00a8ff}
 .content_text ul{padding-top:15px;font-size:16px}
 .content_text ul li{color:#262626;line-height:1.5;margin-top:32px}
 .content_text ul li p{color:#a5a5a5;margin-top:4px}
-.content_icon{background:url("../img/main_icon-f68e4bd86942e507c29331ca3b84b196.png") no-repeat;width:24px;height:24px;display:inline-block;vertical-align:top;margin-right:5px}
+.content_icon{width:24px;height:24px;display:inline-block;vertical-align:top;margin-right:5px; background: url('https://tmup.com/resources/main/img/main_icon-f68e4bd86942e507c29331ca3b84b196.png') no-repeat;}
 .content_icon.icon_2{background-position:0 -80px}
 .content_icon.icon_3{background-position:0 -160px}
 .content_icon.icon_4{background-position:-42px 0}
