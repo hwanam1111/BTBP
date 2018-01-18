@@ -52,7 +52,7 @@
     <span class="header_bg"></span>
     <div class="main_wrap">
         <div class="content_box">
-            <a href="main.do"><img src="/BTBP/resources/main/test_logo.png" style="width:120px; height:75px; position:relative; bottom:15px;" /></a>
+            <a href="main.do"><img src="/BTBP/resources/main/logo.png" style="width:120px; height:75px; position:relative; bottom:15px;" /></a>
 <!--             <h1><a href="main.do" title="TeamUP"> -->
 <!--                 <svg id="logo_teamup" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="-80 317 550 160" xml:space="preserve"> -->
 <!-- 							<g class="symbol"> -->
@@ -124,7 +124,7 @@
             <span>성공적인 프로젝트를 위한 커뮤니케이션의 모든 것을 담다.</span>
             <div class="btn_down">
                 <a href="javascript:;" class="free_down">친구 초대하기</a>
-                <a href="MemberLoginPage.do" class="teamup_down">팀업 시작하기</a>
+                <a href="MemberLoginPage.do" class="teamup_down">BTBP 시작하기</a>
             </div>
         </div>
 
