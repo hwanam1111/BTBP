@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="apple-touch-icon" sizes="76x76" href="/BTBP/resources/main/teamup-icon.png">
 	<link rel="icon" href="/BTBP/resources/main/teamup-icon.png">
-    <title>BTBP - Best TeamWork Best Project</title>
+    <title>BTBP - Best Teamwork Best Project</title>
     <link rel="stylesheet" href="/BTBP/resources/main/main_pc-eb1df5df9278a527e575036c9ad0d9f1.css">
     <script src="/BTBP/resources/main/jquery.min-8e67452f561a3b8ee8a82fdf57672cd5.js"></script>
 	<script src="/BTBP/resources/main/main.script-009446ba53ec6ecc6b69d88c65df40e9.js"></script>
