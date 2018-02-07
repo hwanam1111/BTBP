@@ -11,7 +11,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <link rel="apple-touch-icon" sizes="76x76" href="/BTBP/resources/main/teamup-icon.png">
 	<link rel="icon" href="/BTBP/resources/main/teamup-icon.png">
-    <title>TeamUP 팀업 - Communication is Everything</title>
+    <title>BTBP - Best Teamwork Best Project</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
   <link rel="stylesheet" href="/BTBP/resources/css/bootstrap.min.css">
