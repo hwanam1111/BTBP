@@ -26,11 +26,8 @@
 <script src="/BTBP/resources/js/demo.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 <style type="text/css">
-@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
-body,taple,div,p,h1,h2,h3,h4,h5,h6 {
-   font-family: 'Noto Sans KR', serif;
-}
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
 </style>
 <c:if test="${!kList.isEmpty()}">
 <c:forEach var="JobVO" items="${kList}" varStatus="status1"> 

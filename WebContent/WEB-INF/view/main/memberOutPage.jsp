@@ -26,6 +26,8 @@
 	<script src="/BTBP/resources/assets/js/material-kit.js" type="text/javascript"></script>
 </head>
 <style type="text/css">
+	@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+	*{font-family: 'Hanna', sans-serif;}
 body{
 	background-color: #FAECC5;
 }

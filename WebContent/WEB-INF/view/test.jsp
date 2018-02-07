@@ -26,6 +26,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="/BTBP/resources/css/AdminLTE.css">
   <link rel="stylesheet" href="/BTBP/resources/css/skins/skin-purple.min.css">
   <style type="text/css">
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
   th,td,tr{
   	text-align: center;
   }

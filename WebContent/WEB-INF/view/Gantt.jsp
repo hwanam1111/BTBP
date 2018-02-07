@@ -39,6 +39,8 @@
 <script src="/BTBP/resources/js/demo.js"></script>
 <script type="text/javascript" src="/BTBP/resources/js/jquery-ui-1.9.2.custom.js"></script>
 <style type="text/css">
+@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+*{font-family: 'Hanna', sans-serif;}
 td{
 	text-align: center;
 	padding: 10px;

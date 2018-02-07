@@ -5,6 +5,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 </head>
 <body>
 

@@ -25,7 +25,10 @@
 	<script src="/BTBP/resources/assets/js/nouislider.min.js" type="text/javascript"></script>
 	<script src="/BTBP/resources/assets/js/bootstrap-datepicker.js" type="text/javascript"></script>
 	<script src="/BTBP/resources/assets/js/material-kit.js" type="text/javascript"></script>
-
+	<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 </head>
 
 <body class="signup-page">

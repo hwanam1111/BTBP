@@ -22,13 +22,10 @@
 <script src="/BTBP/resources/plugins/bootstrap/bootstrap.min.js"></script>
 <script src="/BTBP/resources/js/app.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<style type="text/css">
-@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
-body,table,div,p,h1,h2,h3,h4,h5,h6 {
-   font-family: 'Noto Sans KR', serif;
-}
-</style>
+<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 <script type="text/javascript">
 $(function(){
 	$('li').removeClass('active');

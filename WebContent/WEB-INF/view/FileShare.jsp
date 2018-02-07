@@ -71,7 +71,10 @@
 <script src="/BTBP/resources/plugins/bootstrap/bootstrap.min.js"></script>
 <script src="/BTBP/resources/js/app.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
+<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 <script>
 $(function(){
 	

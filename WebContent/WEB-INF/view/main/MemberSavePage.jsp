@@ -32,6 +32,8 @@
 	<script src="/BTBP/resources/assets/js/jquery.validate.min.js" type="text/javascript"></script>
 
 	<style type="text/css">
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
 	small{
 		color: blue;
 	}

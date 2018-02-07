@@ -25,11 +25,8 @@
 
 
 <style type="text/css">
-@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
-body,table,div,p,h1,h2,h3,h4,h5,h6 {
-   font-family: 'Noto Sans KR', serif;
-}
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
 	th, td{
 		text-align: center;
 	}	

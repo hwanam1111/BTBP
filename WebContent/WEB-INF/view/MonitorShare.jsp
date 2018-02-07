@@ -24,6 +24,10 @@
 <script src="/BTBP/resources/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
 <script src="/BTBP/resources/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
 <script src="/BTBP/resources/js/demo.js"></script>
+<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 <script type="text/javascript">
 $(function(){
 	$('li').removeClass('active');

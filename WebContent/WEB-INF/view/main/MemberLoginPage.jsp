@@ -25,6 +25,10 @@
 	<script src="/BTBP/resources/assets/js/nouislider.min.js" type="text/javascript"></script>
 	<script src="/BTBP/resources/assets/js/bootstrap-datepicker.js" type="text/javascript"></script>
 	<script src="/BTBP/resources/assets/js/material-kit.js" type="text/javascript"></script>
+	<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 	<script type="text/javascript">
 	$(function(){
 		$('.idsearchBtn').click(function(){
@@ -48,9 +52,9 @@
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
         		</button>
-        		<a class="navbar-brand" href="main.do">TeamUP</a>
+        		<a class="navbar-brand" href="main.do">Best Teamwork Best Project</a>
         	</div>
-
+ 
         	<div class="collapse navbar-collapse" id="navigation-example">
         		<ul class="nav navbar-nav navbar-right">
 					<li>
@@ -75,7 +79,7 @@
 						<div class="card card-signup">
 							<form class="form" method="post" action="MemberLogin.do">
 								<div class="header header-primary text-center">
-									<h4>로그인</h4>
+									<h4 style="font-weight: bold;">로그인</h4>
 									<div class="social-line">
 										<a href="#" class="btn btn-simple btn-just-icon">
 											<i class="fa fa-facebook-square"></i>

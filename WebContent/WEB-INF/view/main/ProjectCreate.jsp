@@ -23,11 +23,8 @@
 <script src="/BTBP/resources/assets/js/bootstrap-datepicker.js" type="text/javascript"></script>
 <script src="/BTBP/resources/assets/js/material-kit.js" type="text/javascript"></script>
 <style type="text/css">
-@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
-body,table,div,p,h1,h2,h3,h4,h5,h6 {
-   font-family: 'Noto Sans KR', serif;
-}
+@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+*{font-family: 'Hanna', sans-serif;}
 body{
 	background-color: #E8D9FF;
 }

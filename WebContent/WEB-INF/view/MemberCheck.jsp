@@ -19,6 +19,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
   <link rel="stylesheet" href="/BTBP/resources/css/AdminLTE.min.css">
   <link rel="stylesheet" href="/BTBP/resources/css/skins/skin-blue.min.css">
+  <style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">

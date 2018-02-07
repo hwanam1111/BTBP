@@ -29,6 +29,8 @@
 <link rel="stylesheet" href="/BTBP/resources/css/kmong_fonts.css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> 
 <style type="text/css">
+@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+*{font-family: 'Hanna', sans-serif;}
 button{background-color:gray;color:#fff;border:none;box-shadow:none;font-size:14px;font-weight:500;-webkit-border-radius:4px;border-radius:5px;  padding:8px 28px;cursor:pointer}
 dl{
 	width:180px;

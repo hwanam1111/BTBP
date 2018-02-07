@@ -36,6 +36,8 @@
 	<script src="/BTBP/resources/assets/js/material-kit.js" type="text/javascript"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> 
 	<style type="text/css">
+	@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+	*{font-family: 'Hanna', sans-serif;}
 	th, td{
 		text-align: center;
 	}
@@ -61,7 +63,7 @@
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
         		</button>
-        		<a class="navbar-brand" href="LoginMain.do">TeamUP</a>
+        		<a class="navbar-brand" href="LoginMain.do">Best Teamwork Best Project</a>
         	</div>
 
         	<div class="collapse navbar-collapse" id="navigation-example">

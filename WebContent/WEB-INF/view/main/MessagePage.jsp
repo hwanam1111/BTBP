@@ -30,6 +30,10 @@
 	<script src="/BTBP/resources/js/pages/dashboard2.js"></script>
 	<script src="/BTBP/resources/js/demo.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> 
+	<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 	<script type="text/javascript">
 	$(function(){
 		

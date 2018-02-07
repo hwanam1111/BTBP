@@ -29,6 +29,8 @@
 <script src="http://www.playrtc.com/sdk/js/playrtc.js"></script>
   
 <style>
+@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+*{font-family: 'Hanna', sans-serif;}
 .local-video {
 	width: 100%;
 	height: 100%;

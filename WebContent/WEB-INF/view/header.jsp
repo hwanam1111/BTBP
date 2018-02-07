@@ -13,6 +13,8 @@
 
 
 <style>
+@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+*{font-family: 'Hanna', sans-serif;}
 .main-header, .logo-lg{
 	font-weight: bold;
 }

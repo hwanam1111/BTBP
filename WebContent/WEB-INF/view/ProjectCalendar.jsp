@@ -26,11 +26,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="/BTBP/resources/plugins/fullcalendar/fullcalendar.js"></script>
 <style type="text/css">
-@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
-body,table,div,p,h1,h2,h3,h4,h5,h6 {
-   font-family: 'Noto Sans KR', serif;
-}
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
 </style>
 <script>
 $(function () {

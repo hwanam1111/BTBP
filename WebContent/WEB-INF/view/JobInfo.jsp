@@ -39,6 +39,10 @@
 <script src="/BTBP/resources/js/app.min.js"></script>
 <script src="/BTBP/resources/js/demo.js"></script>
 <script type="text/javascript" src="/BTBP/resources/js/jquery-ui-1.9.2.custom.js"></script>
+<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 <script>
 $(function(){
 	$('li').removeClass('active');

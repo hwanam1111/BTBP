@@ -38,11 +38,8 @@
 <script src="/BTBP/resources/js/demo.js"></script>
 <script type="text/javascript" src="/BTBP/resources/js/jquery-ui-1.9.2.custom.js"></script>
 <style type="text/css">
-@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
-body,table,div,p,h1,h2,h3,h4,h5,h6 {
-   font-family: 'Noto Sans KR', serif;
-}
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
 .form-control{ 
 	border-radius : 20px;
 }

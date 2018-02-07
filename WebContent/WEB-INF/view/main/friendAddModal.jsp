@@ -32,9 +32,11 @@
 	<!-- Control Center for Material Kit: activating the ripples, parallax effects, scripts from the example pages etc -->
 	<script src="/BTBP/resources/assets/js/material-kit.js" type="text/javascript"></script>
 	<style type="text/css">
-	body{
-		background-color: #F2FFED;
-	}
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+		body{
+			background-color: #F2FFED;
+		}
 	</style>
 	<script type="text/javascript">
 		$(function(){

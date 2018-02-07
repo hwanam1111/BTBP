@@ -10,6 +10,10 @@
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
 <!-- 2. modal css -->
 <link rel="stylesheet" href="/BTBP/resources/plugins/css/modal.css">
+<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 </head>
 <body>
 

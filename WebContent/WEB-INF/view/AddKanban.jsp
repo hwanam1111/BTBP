@@ -20,6 +20,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="/BTBP/resources/plugins/daterangepicker/daterangepicker.js"></script>
 <script src="/BTBP/resources/plugins/datepicker/bootstrap-datepicker.js"></script>
+<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 <script>
 $(function () {
     $('#datepicker').datepicker({

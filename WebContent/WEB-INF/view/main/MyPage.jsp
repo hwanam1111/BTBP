@@ -31,6 +31,10 @@
 	<script src="/BTBP/resources/assets/js/paper-bootstrap-wizard.js" type="text/javascript"></script>
 	<!--  More information about jquery.validate here: http://jqueryvalidation.org/	 -->
 	<script src="/BTBP/resources/assets/js/jquery.validate.min.js" type="text/javascript"></script>
+	<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 
 	<c:choose>
 		<c:when test="${mvo.searchStatus eq 'Y'}">

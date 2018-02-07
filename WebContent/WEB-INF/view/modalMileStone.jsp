@@ -24,7 +24,10 @@
 	<!--   Core JS Files   -->
 	<script src="/BTBP/resources/assets/js/jquery.min.js" type="text/javascript"></script>
 	<script src="/BTBP/resources/assets/js/bootstrap.min.js" type="text/javascript"></script>
-
+	<style>
+		@import url('https://fonts.googleapis.com/earlyaccess/hanna.css');
+		*{font-family: 'Hanna', sans-serif;}
+	</style>
 </head>
 <style>
 .tableLine li {
