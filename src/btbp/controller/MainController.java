@@ -119,7 +119,7 @@ public class MainController{
  		List<BoardVO> bList = bdao.allBoard(bvo);
  		List<FriendVO> fList = fdao.myFriend(memberId);
  		int noReadMsg = msgdao.noReadMsg(memberId);
- 		
+ 			
  		// View 지정 및 데이터 전달
  		ModelAndView m = new ModelAndView();
 		m.setViewName("/main/LoginMain");

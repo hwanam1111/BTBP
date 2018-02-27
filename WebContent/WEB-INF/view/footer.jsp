@@ -3,7 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <script type="text/javascript">
 	$(function(){
-		
 		$('#chatMessage').focus();
 		$(".direct-chat-messages").scrollTop($(".direct-chat-messages")[0].scrollHeight);
 		
@@ -20,16 +19,15 @@
 						} else {
 							$(".direct-chat-messages").scrollTop($(".direct-chat-messages")[scrollPos].scrollHeight);
 						}
-				},
+					},
                   error : function(data) {
                      //alert(data + "에러");
                   }
                });
-            }, 1000);
-		
+		 }, 1000);
 	});
 
-function enterEvt(){
+	function enterEvt(){
 		var chatMessage = $('#chatMessage').val();
 		$('#chatMessage').focus();
 		$(".direct-chat-messages").scrollTop($(".direct-chat-messages")[0].scrollHeight);
@@ -50,34 +48,30 @@ function enterEvt(){
             	$('#chatMessage').val("");
             }
          });
-};
+	};
 </script>
 
-<!-- Control Sidebar -->
 <aside class="control-sidebar control-sidebar-dark" id="chatting_bar">
-	<!-- Create the tabs -->
 	<ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-		<li class="active"><a href="#control-sidebar-home-tab"
-			data-toggle="tab"><i class="fa fa-users"></i></a></li>
-		<li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i
-				class="fa fa-wechat"></i></a></li>
+		<li class="active">
+			<a href="#control-sidebar-home-tab" data-toggle="tab">
+				<i class="fa fa-users"></i>
+			</a>
+		</li>
+		<li>
+			<a href="#control-sidebar-settings-tab" data-toggle="tab">
+				<i class="fa fa-wechat"></i>
+			</a>
+		</li>
 	</ul>
-
-
-
-	<!-- Tab panes -->
 	<div class="tab-content">
-		<!-- Home tab content -->
 		<div class="tab-pane active" id="control-sidebar-home-tab">
 			<h3 class="control-sidebar-heading" style="text-align: center">
 				<i class="fa fa-send"></i>&nbsp;&nbsp;멤버 목록
 			</h3>
 			<br />
-			<!-- Contacts are loaded here -->
 			<ul class="contacts-list control-sidebar-menu">
-				
 				<!-- @@@@@@프로젝트 멤버 -->
-				
 				<c:if test="${!pList.isEmpty()}">
 					<c:forEach var="ProjectMemberVO" items="${pList}">
 						<c:if test="${ProjectMemberVO.memberId != sessionScope.memberId }"> <!-- 자기 자신은 목록에서 제외 -->
@@ -105,14 +99,9 @@ function enterEvt(){
 						</c:if>
 					</c:forEach>
 				</c:if>
-				
 				<!-- @@@@@@프로젝트 멤버 -->
-				
 			</ul>
-			<!-- /.control-sidebar-menu -->
 		</div>
-		<!-- /.tab-pane -->
-
 		<!--==========================채팅탭 =========================== -->
 		<div class="tab-pane" id="control-sidebar-settings-tab">
 			<h3 class="control-sidebar-heading" style="text-align: center">
@@ -120,7 +109,6 @@ function enterEvt(){
 			</h3>
 			<br />
 			<!-- @@@@@@@@@@@@@@@@@@팀 채팅 -->
-
 			<div class="box box-primary direct-chat direct-chat-primary">
 				<div class="box-body">
 					<div class="direct-chat-messages" id="chatContent" style="height: 500px"><!-- 채팅 내용 뿌려주는 곳 --></div>
@@ -135,14 +123,7 @@ function enterEvt(){
 					</div>
 				</div>
 			</div>
-
 			<!-- @@@@@@@@@@@@@@@@@@팀 채팅 -->
-			
-			
 		</div>
-	
 	</div>
-	
-	
 </aside>
-
